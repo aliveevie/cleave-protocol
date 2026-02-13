@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container py-8 space-y-8">
+      <main className="container mx-auto px-4 py-8 space-y-8">
         {/* Hero */}
         <div className="text-center space-y-3">
           <h1 className="text-5xl font-bold tracking-tight">
