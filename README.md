@@ -1,6 +1,21 @@
-# Stacks Starter
+# Cleave Protocol
 
-A minimal starter kit for building dApps on Stacks. Connect a wallet, interact with a smart contract, and understand the patterns.
+Bitcoin yield tokenization on Stacks. Cleave lets you split sBTC into two derivative tokens — **psBTC** (principal) and **ysBTC** (yield) — enabling fixed-rate yield strategies and principal protection on Bitcoin.
+
+## How It Works
+
+1. **Split** — Deposit sBTC into the Cleave vault and receive psBTC + ysBTC tokens representing your principal and future yield.
+2. **Merge** — Recombine psBTC and ysBTC to redeem your original sBTC before maturity.
+3. **Redeem** — After maturity, redeem psBTC for your principal and ysBTC for accrued yield.
+
+## Contracts
+
+| Contract | Description |
+|---|---|
+| `cleave-core` | Core protocol logic — split, merge, redeem, pool management |
+| `psbtc-token` | SIP-010 fungible token representing principal |
+| `ysbtc-token` | SIP-010 fungible token representing yield |
+| `stacking-vault` | Vault that holds deposited sBTC |
 
 ## Prerequisites
 
@@ -8,7 +23,6 @@ A minimal starter kit for building dApps on Stacks. Connect a wallet, interact w
 - [pnpm](https://pnpm.io/installation)
 - [Clarinet](https://docs.hiro.so/clarinet) (for local contract development)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) (required for local devnet)
-- Basic knowledge of [React](https://react.dev), [TypeScript](https://www.typescriptlang.org/docs/), and [Stacks](https://docs.stacks.co)
 
 ## Quick Start
 
@@ -31,28 +45,29 @@ pnpm --filter front-end dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-See [docs/getting-started.md](docs/getting-started.md) for a detailed walkthrough.
-
 ## Project Structure
 
 ```
-stacks-starter/
-├── clarity/           # Clarity smart contracts
-│   ├── contracts/     # Contract source files
-│   ├── deployments/   # Deployment plans for devnet/testnet/mainnet
-│   └── tests/         # Contract unit tests
-├── front-end/         # Next.js application
+cleave-protocol/
+├── clarity/               # Clarity smart contracts
+│   ├── contracts/         # Contract source files
+│   │   ├── traits/        # SIP-010 trait definitions
+│   │   ├── cleave-core.clar
+│   │   ├── psbtc-token.clar
+│   │   ├── ysbtc-token.clar
+│   │   └── stacking-vault.clar
+│   ├── deployments/       # Deployment plans (devnet/simnet)
+│   └── tests/             # Contract unit tests
+├── front-end/             # Next.js application
 │   └── src/
-│       ├── app/           # Next.js app router pages
-│       ├── components/    # React components
+│       ├── app/           # Pages — split, merge, redeem, faucet
+│       ├── components/    # UI components
 │       ├── constants/     # Contract addresses, network config
-│       ├── hooks/         # React Query hooks for contract calls
-│       └── lib/           # Utilities and API clients
-└── docs/              # Documentation
+│       ├── hooks/         # React hooks for contract interactions
+│       └── lib/           # Utilities and helpers
+└── pnpm-workspace.yaml
 ```
 
-## Documentation
+## License
 
-- [Getting Started](docs/getting-started.md) - Setup tutorial and first steps
-- [Architecture Patterns](docs/patterns.md) - Wallet, contract, and React Query patterns
-- [Extending the Starter](docs/extending.md) - Replace the counter with your contract
+MIT
