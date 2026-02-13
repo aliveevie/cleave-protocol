@@ -1,5 +1,6 @@
 "use client"
 
+import { Wallet } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -18,7 +19,8 @@ export function DevnetWalletSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
+        <Button>
+          <Wallet className="h-4 w-4 mr-2" />
           {devnetWallet ? formatStxAddress(devnetWallet.stxAddress) : "Select Wallet"}
         </Button>
       </DropdownMenuTrigger>

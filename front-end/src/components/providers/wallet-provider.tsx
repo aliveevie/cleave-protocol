@@ -40,8 +40,7 @@ interface WalletProviderProps {
 }
 
 export function WalletProvider({ children }: WalletProviderProps) {
-  // Get network from environment, default to devnet
-  const network = (process.env.NEXT_PUBLIC_NETWORK || "devnet") as NetworkType
+  const network = (process.env.NEXT_PUBLIC_STACKS_NETWORK || "devnet") as NetworkType
   const isDevnet = network === "devnet"
 
   // State
@@ -53,61 +52,70 @@ export function WalletProvider({ children }: WalletProviderProps) {
   // Mount effect - check for existing Leather connection
   useEffect(() => {
     setMounted(true)
-    if (!isDevnet) {
-      setLeatherConnected(isConnected())
-    }
-  }, [isDevnet])
+    setLeatherConnected(isConnected())
+  }, [])
 
-  // Leather wallet connection
+  // Browser wallet connection (works on any network including devnet)
   const connectWallet = useCallback(async () => {
-    if (isDevnet) {
-      console.warn("Connect wallet called on devnet - use setDevnetWallet instead")
-      return
-    }
-
     try {
       setIsConnecting(true)
       await connect()
       setLeatherConnected(isConnected())
+      // If connected via browser wallet, clear any devnet wallet selection
+      if (isConnected()) {
+        setDevnetWallet(null)
+      }
     } catch (error) {
       console.error("Wallet connection failed:", error)
     } finally {
       setIsConnecting(false)
     }
-  }, [isDevnet])
+  }, [])
 
   // Disconnect wallet
   const disconnectWallet = useCallback(() => {
-    if (isDevnet) {
+    if (devnetWallet) {
       setDevnetWallet(null)
-    } else {
+    }
+    if (leatherConnected) {
       disconnect()
       setLeatherConnected(false)
     }
-  }, [isDevnet])
+  }, [devnetWallet, leatherConnected])
+
+  // Handle devnet wallet selection — clears browser wallet state
+  const handleSetDevnetWallet = useCallback((wallet: DevnetWallet | null) => {
+    if (wallet && leatherConnected) {
+      disconnect()
+      setLeatherConnected(false)
+    }
+    setDevnetWallet(wallet)
+  }, [leatherConnected])
 
   // Compute current address
   const address = useMemo(() => {
     if (!mounted) return null
 
-    if (isDevnet) {
-      return devnetWallet?.stxAddress || null
+    // Devnet test wallet takes priority if selected
+    if (devnetWallet) {
+      return devnetWallet.stxAddress
     }
 
-    if (!leatherConnected) return null
+    // Browser wallet
+    if (leatherConnected) {
+      const data = getLocalStorage()
+      const stxAddresses = data?.addresses?.stx || []
+      return stxAddresses.length > 0 ? stxAddresses[0].address : null
+    }
 
-    const data = getLocalStorage()
-    const stxAddresses = data?.addresses?.stx || []
-
-    // v8.x returns only 1 address for current network
-    return stxAddresses.length > 0 ? stxAddresses[0].address : null
-  }, [mounted, isDevnet, devnetWallet, leatherConnected])
+    return null
+  }, [mounted, devnetWallet, leatherConnected])
 
   // Compute connection state
   const isConnectedValue = useMemo(() => {
     if (!mounted) return false
-    return isDevnet ? devnetWallet !== null : leatherConnected
-  }, [mounted, isDevnet, devnetWallet, leatherConnected])
+    return devnetWallet !== null || leatherConnected
+  }, [mounted, devnetWallet, leatherConnected])
 
   const contextValue = useMemo<WalletContextType>(
     () => ({
@@ -119,7 +127,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
       disconnectWallet,
       isDevnet,
       devnetWallet,
-      setDevnetWallet,
+      setDevnetWallet: handleSetDevnetWallet,
     }),
     [
       isConnectedValue,
@@ -130,6 +138,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
       disconnectWallet,
       isDevnet,
       devnetWallet,
+      handleSetDevnetWallet,
     ]
   )
 

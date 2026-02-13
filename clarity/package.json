@@ -8,8 +8,8 @@
     "test": "vitest run",
     "test:report": "vitest run -- --coverage --costs",
     "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\"",
-    "fuzz": "npx rv . counter test",
-    "fuzz:invariant": "npx rv . counter invariant",
+    "fuzz": "npx rv . cleave-core test",
+    "fuzz:invariant": "npx rv . cleave-core invariant",
     "fuzz:all": "npm run fuzz && npm run fuzz:invariant"
   },
   "author": "",
@@ -20,6 +20,7 @@
     "@stacks/transactions": "^7.3.1",
     "chokidar-cli": "^3.0.0",
     "typescript": "^5.3.3",
+    "vite": "^7.3.1",
     "vitest": "^3.1.3",
     "vitest-environment-clarinet": "^3.0.0"
   }

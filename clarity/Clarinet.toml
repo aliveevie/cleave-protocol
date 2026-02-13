@@ -1,14 +1,46 @@
 [project]
-name = 'clarity'
-description = ''
+name = 'cleave-protocol'
+description = 'Bitcoin Yield Tokenization Protocol on Stacks'
 authors = []
 telemetry = false
 cache_dir = './.cache'
+requirements = [
+  { contract_id = 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-deposit' },
+]
 
-[contracts.counter]
-path = 'contracts/counter.clar'
+[contracts.sip-010-trait]
+path = 'contracts/traits/sip-010-trait.clar'
 clarity_version = 4
 epoch = 3.3
+
+[contracts.psbtc-token]
+path = 'contracts/psbtc-token.clar'
+clarity_version = 4
+epoch = 3.3
+depends_on = ['sip-010-trait', 'cleave-core']
+
+[contracts.ysbtc-token]
+path = 'contracts/ysbtc-token.clar'
+clarity_version = 4
+epoch = 3.3
+depends_on = ['sip-010-trait', 'cleave-core']
+
+[contracts.cleave-core]
+path = 'contracts/cleave-core.clar'
+clarity_version = 4
+epoch = 3.3
+depends_on = ['psbtc-token', 'ysbtc-token']
+
+[contracts.stacking-vault]
+path = 'contracts/stacking-vault.clar'
+clarity_version = 4
+epoch = 3.3
+
+[contracts.cleave-core-tests]
+path = 'contracts/cleave-core.tests.clar'
+clarity_version = 4
+epoch = 3.3
+depends_on = ['cleave-core', 'psbtc-token', 'ysbtc-token']
 
 [repl.analysis]
 passes = []
