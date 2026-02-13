@@ -85,7 +85,7 @@ export const openContractCall = async (options: ContractCallRegularOptions) => {
       sponsored: options.sponsored,
     };
 
-    const result = await request({}, 'stx_callContract', params);
+    const result = await request('stx_callContract', params);
 
     if (options.onFinish) {
       options.onFinish({ txId: result.txid } as unknown as FinishedTxData);
